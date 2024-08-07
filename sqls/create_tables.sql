@@ -6,3 +6,13 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
 );
+
+
+-- mysql> DESCRIBE users;
+-- +----------+--------------+------+-----+---------+----------------+
+-- | Field    | Type         | Null | Key | Default | Extra          |
+-- +----------+--------------+------+-----+---------+----------------+
+-- | id       | int          | NO   | PRI | NULL    | auto_increment |
+-- | email    | varchar(255) | NO   | UNI | NULL    |                |
+-- | password | varchar(255) | NO   |     | NULL    |                |
+-- +----------+--------------+------+-----+---------+----------------+
