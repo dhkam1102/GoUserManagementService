@@ -1,5 +1,5 @@
 // internal/storage/database.go
-package storage
+package internal
 
 import (
 	"database/sql"
