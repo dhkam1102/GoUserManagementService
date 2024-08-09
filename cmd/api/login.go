@@ -46,9 +46,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// IMPORVE: use hased password
+	// IMPORVE: use hashed password
 
 	// NOTE: need more understanding of token and the lines below
+	// NOTE: jwt token has 3parts: hearder, payload, signature
+	// NOTE: using token we can have a stateless authentication
 	token := "jwt-token"
 
 	// NOTE: sending the token back to user
