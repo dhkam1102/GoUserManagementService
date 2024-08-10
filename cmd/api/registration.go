@@ -10,7 +10,7 @@ import (
 type RegisterRequest struct {
 	Email       string `json:"email"`
 	Password    string `json:"password"`
-	ConfirmPass string `json: "confirm_password"`
+	ConfirmPass string `json:"confirm_password"`
 }
 
 func RegisterHandler(writer http.ResponseWriter, request *http.Request) {
