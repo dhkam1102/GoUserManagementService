@@ -3,9 +3,9 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
-	"internal/database"
-	"internal/models"
 	"net/http"
+	"user-management-service/internal/database"
+	"user-management-service/internal/models"
 )
 
 // NOTE: LoginRequest has no confirm password

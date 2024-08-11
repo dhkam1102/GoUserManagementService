@@ -2,9 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	"internal/database"
-	"internal/models"
 	"net/http"
+	"user-management-service/internal/database"
+	"user-management-service/internal/models"
 )
 
 type RegisterRequest struct {

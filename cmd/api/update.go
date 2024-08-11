@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"internal/database"
 	"net/http"
+	"user-management-service/internal/database"
 )
 
 type UpdateRequest struct {
