@@ -1,5 +1,5 @@
 // internal/models.go
-package internal
+package models
 
 type User struct {
 	ID       int    `json:"id"`
