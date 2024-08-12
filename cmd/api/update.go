@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"user-management-service/internal/database"
 )
@@ -16,9 +17,12 @@ type UpdateRequest struct {
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var req UpdateRequest
 
+	log.Printf("UpdateUserHandler: Received update request from IP: %s", r.RemoteAddr)
+
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&req)
 	if err != nil {
+		log.Printf("UpdateUserHandler: Failed to decode request body: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
@@ -29,8 +33,11 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("Connecting to database to update user")
+
 	db := database.NewDatabaseConnection()
 	defer db.Close()
+	log.Printf("UpdateUserHandler: Database connection established")
 
 	get_id_query := "SELECT id FROM users WHERE email = ? AND password = ?"
 	var userID int
@@ -47,6 +54,8 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to update user", http.StatusInternalServerError)
 		return
 	}
+
+	log.Printf("New email %s updated successfully", req.NewEmail)
 
 	// Send a success response
 	w.Header().Set("Content-Type", "application/json")

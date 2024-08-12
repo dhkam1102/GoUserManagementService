@@ -35,7 +35,6 @@ func RegisterHandler(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	// Logging the decoded request data --------
 	log.Printf("Decoded registration request: Email: %s, Password: %s, ConfirmPassword: %s", req.Email, req.Password, req.ConfirmPass)
 
 	// IMPROVE: might want to use hashing for security
@@ -50,7 +49,6 @@ func RegisterHandler(writer http.ResponseWriter, request *http.Request) {
 		Password: req.Password,
 	}
 
-	// Logging before attempting database connection
 	log.Printf("Connecting to database to insert user: %s", user.Email)
 
 	db := database.NewDatabaseConnection()

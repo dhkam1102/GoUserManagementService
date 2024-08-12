@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 	"user-management-service/internal/database"
 	"user-management-service/internal/models"
@@ -17,18 +18,26 @@ type LoginRequest struct {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 
+	log.Printf("LoginHandler: Received login request from IP: %s", r.RemoteAddr)
+
 	// NOTE: creating a json decoder that will read request's body
 	decoder := json.NewDecoder(r.Body)
 	// NOTE: decode json into req
 	error := decoder.Decode(&req)
 
 	if error != nil {
+		log.Printf("Lofing handler Error in decoding: %v", error)
 		http.Error(w, "invalid request type1", http.StatusBadRequest)
 		return
 	}
 
+	// Logging before attempting database connection
+	log.Printf("Connecting to database to insert user: %s", req.Email)
+
 	db := database.NewDatabaseConnection()
 	defer db.Close()
+
+	log.Printf("LoginHandler: Database connection established")
 
 	var user models.User
 	err := db.QueryRow("SELECT id, email, password FROM users WHERE email = ?", req.Email).Scan(&user.ID, &user.Email, &user.Password)
@@ -36,16 +45,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// NOTE: check if the email does not exist
 	if err == sql.ErrNoRows {
 		// Email not found in the database
+		log.Printf("LoginHandler: Email not found - Email: %s", req.Email)
 		http.Error(w, "Invalid email", http.StatusUnauthorized)
 		return
 	}
 
 	// NOTE: Handle other potential errors (database connection, query error)
 	if err != nil {
+		log.Printf("LoginHandler: Error querying database: %v", err)
 		http.Error(w, "Something went wrong. Please try again later.", http.StatusInternalServerError)
 		return
 	}
 
+	log.Printf("LoginHandler: User found - ID: %d, Email: %s", user.ID, user.Email)
 	// IMPORVE: use hashed password
 
 	// NOTE: need more understanding of token and the lines below
