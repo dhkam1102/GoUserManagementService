@@ -5,14 +5,24 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 	"user-management-service/internal/database"
 	"user-management-service/internal/models"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 // NOTE: LoginRequest has no confirm password
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+var jwtKey = []byte("your_secret_key") // Use a secure key
+
+type Claims struct {
+	Email string `json:"email"`
+	jwt.StandardClaims
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,30 +70,52 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("LoginHandler: User found - ID: %d, Email: %s", user.ID, user.Email)
 	// IMPORVE: use hashed password
 
-	// NOTE: need more understanding of token and the lines below
-	// NOTE: jwt token has 3parts: hearder, payload, signature
-	// NOTE: using token we can have a stateless authentication
-	token := "jwt-token"
+	expirationTime := time.Now().Add(5 * time.Minute)
+	claims := &Claims{
+		Email: req.Email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
 
-	// NOTE: sending the token back to user
-	header := w.Header()
-	// NOTE: setting content-type
-	header.Set("Content-Type", "application/json")
-	// Create a map to hold the JSON data
-	responseData := make(map[string]string)
-
-	// Set the "token" key to the value of the token variable
-	responseData["token"] = token
-	// Create a new JSON encoder that writes to the ResponseWriter
-	encoder := json.NewEncoder(w)
-
-	// Encode the map into JSON format and write it to the response
-	err = encoder.Encode(responseData)
-
-	// Check for errors in the encoding process
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
-		// Handle the error, possibly by sending an internal server error status
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		log.Printf("LoginHandler: Error generating JWT token: %v", err)
+		http.Error(w, "Could not create token", http.StatusInternalServerError)
 		return
 	}
+
+	// Return the JWT token
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"token": "` + tokenString + `"}`))
+
+	log.Printf("LoginHandler: Successfully sent response with JWT token")
+
+	// // NOTE: need more understanding of token and the lines below
+	// // NOTE: jwt token has 3parts: hearder, payload, signature
+	// // NOTE: using token we can have a stateless authentication
+	// token := "jwt-token"
+
+	// // NOTE: sending the token back to user
+	// header := w.Header()
+	// // NOTE: setting content-type
+	// header.Set("Content-Type", "application/json")
+	// // Create a map to hold the JSON data
+	// responseData := make(map[string]string)
+
+	// // Set the "token" key to the value of the token variable
+	// responseData["token"] = token
+	// // Create a new JSON encoder that writes to the ResponseWriter
+	// encoder := json.NewEncoder(w)
+
+	// // Encode the map into JSON format and write it to the response
+	// err = encoder.Encode(responseData)
+
+	// // Check for errors in the encoding process
+	// if err != nil {
+	// 	// Handle the error, possibly by sending an internal server error status
+	// 	http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	// 	return
+	// }
 }
