@@ -11,27 +11,20 @@ import (
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var req models.UpdateRequest
 
-	log.Printf("UpdateUserHandler: Received update request from IP: %s", r.RemoteAddr)
-
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&req)
 	if err != nil {
-		log.Printf("UpdateUserHandler: Failed to decode request body: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	// Validate the input (ensure at least one field is provided)
 	if req.NewEmail == "" && req.NewPassword == "" {
 		http.Error(w, "No fields to update", http.StatusBadRequest)
 		return
 	}
 
-	log.Printf("Connecting to database to update user")
-
 	db := database.NewDatabaseConnection()
 	defer db.Close()
-	log.Printf("UpdateUserHandler: Database connection established")
 
 	get_id_query := "SELECT id FROM users WHERE email = ? AND password = ?"
 	var userID int
@@ -51,9 +44,8 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("New email %s updated successfully", req.NewEmail)
 
-	// Send a success response
+	// should be the token part
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "User updated successfully"}`))
-
 }
