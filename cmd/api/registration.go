@@ -58,7 +58,7 @@ func RegisterHandler(writer http.ResponseWriter, request *http.Request) {
 	log.Printf("Attempting to insert user: %s into the database", user.Email)
 
 	// NOTE: db.Exec return value: sql.Result(RowsAffected(), LastInsertId()), error
-	_, error = db.Exec("INSERT INTO users (email, password, role) VALUES (?, ?)", user.Email, user.Password, user.Role)
+	_, error = db.Exec("INSERT INTO users (email, password, role) VALUES (?, ?, ?)", user.Email, user.Password, user.Role)
 	if error != nil {
 		http.Error(writer, "Error on saving new user", http.StatusInternalServerError)
 		return

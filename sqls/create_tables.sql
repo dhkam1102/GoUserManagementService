@@ -20,3 +20,13 @@ CREATE TABLE users (
 -- | password | varchar(255)             | NO   |     | NULL     |                |
 -- | role     | enum('admin','customer') | NO   |     | customer |                |
 -- +----------+--------------------------+------+-----+----------+----------------+
+
+
+
+-- Current users
+-- +----+-------------------+-----------+----------+
+-- | id | email             | password  | role     |
+-- +----+-------------------+-----------+----------+
+-- |  1 | admin@example.com | adminpass | admin    |
+-- |  2 | new@example.com   | newhello  | customer |
+-- +----+-------------------+-----------+----------+
