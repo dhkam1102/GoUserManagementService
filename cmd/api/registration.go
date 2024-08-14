@@ -72,3 +72,5 @@ func RegisterHandler(writer http.ResponseWriter, request *http.Request) {
 	// NOTE: by slicing the string into bytes, it can be sent as HTTP response body
 	writer.Write([]byte("User registered successfully"))
 }
+
+//fklajvaljval;jvd testing
