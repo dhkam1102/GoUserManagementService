@@ -12,12 +12,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// NOTE: LoginRequest has no confirm password
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 var jwtKey = []byte("your_secret_key") // Use a secure key
 
 type Claims struct {
@@ -26,7 +20,7 @@ type Claims struct {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var req LoginRequest
+	var req models.LoginRequest
 
 	log.Printf("LoginHandler: Received login request from IP: %s", r.RemoteAddr)
 
@@ -54,7 +48,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// NOTE: check if the email does not exist
 	if err == sql.ErrNoRows {
-		// Email not found in the database
 		log.Printf("LoginHandler: Email not found - Email: %s", req.Email)
 		http.Error(w, "Invalid email", http.StatusUnauthorized)
 		return

@@ -5,17 +5,11 @@ import (
 	"log"
 	"net/http"
 	"user-management-service/internal/database"
+	"user-management-service/internal/models"
 )
 
-type UpdateRequest struct {
-	OldEmail    string `json:"oldemail"`
-	OldPassword string `json:"oldpassword"`
-	NewEmail    string `json:"email"`
-	NewPassword string `json:"password"`
-}
-
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
-	var req UpdateRequest
+	var req models.UpdateRequest
 
 	log.Printf("UpdateUserHandler: Received update request from IP: %s", r.RemoteAddr)
 
