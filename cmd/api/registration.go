@@ -9,18 +9,12 @@ import (
 	"user-management-service/internal/models"
 )
 
-type RegisterRequest struct {
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	ConfirmPass string `json:"confirm_password"`
-}
-
 func RegisterHandler(writer http.ResponseWriter, request *http.Request) {
 	// Logging the start of the request -------
 	log.Printf("Received a registration request from %s", request.RemoteAddr)
 
 	// NOTE: creating a RegisterRequest struct to hold the data
-	var req RegisterRequest
+	var req models.RegisterRequest
 
 	// Logging the raw request body for debugging --------
 	log.Printf("Request body: %v", request.Body)
@@ -44,9 +38,14 @@ func RegisterHandler(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	if req.Role == "" {
+		req.Role = "customer"
+	}
+
 	user := models.User{
 		Email:    req.Email,
 		Password: req.Password,
+		Role:     req.Role,
 	}
 
 	log.Printf("Connecting to database to insert user: %s", user.Email)
@@ -59,7 +58,7 @@ func RegisterHandler(writer http.ResponseWriter, request *http.Request) {
 	log.Printf("Attempting to insert user: %s into the database", user.Email)
 
 	// NOTE: db.Exec return value: sql.Result(RowsAffected(), LastInsertId()), error
-	_, error = db.Exec("INSERT INTO users (email, password) VALUES (?, ?)", user.Email, user.Password)
+	_, error = db.Exec("INSERT INTO users (email, password, role) VALUES (?, ?)", user.Email, user.Password, user.Role)
 	if error != nil {
 		http.Error(writer, "Error on saving new user", http.StatusInternalServerError)
 		return
